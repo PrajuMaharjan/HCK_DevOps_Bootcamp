@@ -7,4 +7,7 @@ export default defineConfig({
     port: 5173,
     host: true,
   },
+  // Use relative base path or your exact repository name: '/<repository-name>/'
+  base: './', 
+  
 });
