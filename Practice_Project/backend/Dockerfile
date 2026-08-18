@@ -2,10 +2,13 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY . .
+# Copy only manifest files first so npm ci is cached unless deps actually change
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-RUN npm install
+# Now copy the rest of the source
+COPY . .
 
 EXPOSE 5000
 
-CMD ["npm","run","dev"]
+CMD ["node", "server.js"]

@@ -1,19 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-# --- image settings (same image build.sh pushes) ---
 USERNAME="prajumaharjan"
-IMAGE="todo-backend"
+IMAGE="todo-frontend"
 TAG="latest"
 FULL_NAME="$USERNAME/$IMAGE:$TAG"
 
-# --- runtime settings ---
-CONTAINER="todo-backend"      # was referenced but never defined before - fixed
-APP_PORT=5000                 # matches EXPOSE in Dockerfile / server.js default
-HOST_PORT=80                  # public port; change if 80 is already in use
-ENV_FILE="/home/ec2-user/.env"  # lives only on the EC2 box, never in git/image
+CONTAINER="todo-frontend"
+HOST_PORT=80        # public-facing port for the site
+CONTAINER_PORT=80   # nginx's default listen port inside the image
 
-# --- connection details ---
 KEY="cc.pem"
 EC2_HOST="ec2-user@54.157.210.144"
 
@@ -25,8 +21,7 @@ ssh -o StrictHostKeyChecking=accept-new -i "$KEY" "$EC2_HOST" "
   docker rm $CONTAINER 2>/dev/null || true
   docker run -d --name $CONTAINER \
     --restart unless-stopped \
-    -p $HOST_PORT:$APP_PORT \
-    --env-file $ENV_FILE \
+    -p $HOST_PORT:$CONTAINER_PORT \
     $FULL_NAME
 "
 
